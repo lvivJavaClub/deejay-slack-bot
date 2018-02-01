@@ -1,0 +1,12 @@
+cat <<END
+---
+layout: post
+title:  "${title}"
+image: ${image:-/images/default.png}
+tags: [${tags}]
+date: $(date "+%Y-%m-%d %H:%M:00 +0200")
+---
+
+${message}
+
+END
