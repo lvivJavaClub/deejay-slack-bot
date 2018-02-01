@@ -53,8 +53,6 @@ create() {
     message=`text="${text}" ./message`
 
     create_post "${title}" "${message}" "${tags}"
-    push_post "${title}"
-    waiting_post "${title}"
 
     send "${message}\nSee updates at ${github_io}"
 }
@@ -64,6 +62,9 @@ load_properties
 case "$1" in
     'create')
             create "$2" "$3" "$4"
+            ;;
+    'wait')
+            waiting_post
             ;;
     *)
             echo
