@@ -24,12 +24,12 @@ send() {
 }
 
 create_post() {
-    title="$1" message="$2" tags="$3" ./post > "${github_web}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
+    title="$1" message="$2" tags="$3" ./post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
 }
 
 
 push_post() {
-    cd "${github_web}"
+    cd "${github_repo}"
 #    git status
     git add .
     git commit -m "$title added"
@@ -37,7 +37,7 @@ push_post() {
 }
 
 waiting_post() {
-    url=https://lvivjavaclub.github.io//$(date "+%Y/%m/%d")/${1//[ ]/-}.html
+    url=${githubio_web}/$(date "+%Y/%m/%d")/${1//[ ]/-}.html
     echo "Waiting for post $url";
     until $(curl --output /dev/null --silent --head --fail "$url"); do
       printf '.'
@@ -56,7 +56,7 @@ create() {
     push_post "${title}"
     waiting_post "${title}"
 
-    send "${message}\nSee updates at https://lvivjavaclub.github.io/"
+    send "${message}\nSee updates at ${github_io}"
 }
 
 load_properties
