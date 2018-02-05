@@ -2,5 +2,5 @@ cat <<END
 Hi, this week on Java club
 ${text}
 
-Join us next Thursday, at 10:00 in `Spain` (Room 426)
+Join us next Thursday, at 10:00 in 'Spain' (Room 426)
 END
