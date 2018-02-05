@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROPERTIES=${slack_bot_home:.}/application.properties
+PROPERTIES=${slack_bot_home:-.}/application.properties
 
 load_properties() {
     file=$PROPERTIES
@@ -45,7 +45,7 @@ create() {
     create_post "${title}" "${message}" "${tags}"
     commit_post "${title}"
 
-    send "${message}\nSee updates at ${github_io}"
+    send "${message}\nSee updates at ${githubio_path}"
 }
 
 load_properties
