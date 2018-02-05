@@ -33,7 +33,7 @@ push_post() {
 #    git status
     git add .
     git commit -m "$title added"
-    git push
+    #git push
 }
 
 waiting_post() {
@@ -54,7 +54,7 @@ create() {
 
     create_post "${title}" "${message}" "${tags}"
     push_post "${title}"
-    waiting_post "${title}"
+    #waiting_post "${title}"
 
     send "${message}\nSee updates at ${github_io}"
 }
