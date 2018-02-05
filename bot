@@ -24,7 +24,7 @@ send() {
 }
 
 create_post() {
-    title="$1" message="$2" tags="$3" ./post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
+    title="$1" message="$2" tags="$3" ${slack_bot_home}/post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
 }
 
 
@@ -50,7 +50,7 @@ create() {
     text="${2}"
     tags="${3}"
     next_date=`date "+%Y-%m-%d"`
-    message=`text="${text}" ./message`
+    message=`text="${text}" ${slack_bot_home}/message`
 
     create_post "${title}" "${message}" "${tags}"
     push_post "${title}"
