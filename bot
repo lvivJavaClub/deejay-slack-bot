@@ -17,7 +17,7 @@ load_properties() {
     fi
 }
 
-send() {
+send_slack_message() {
     curl --silent --request POST \
         --url "${slack_hooks}"  \
         --data "{\"text\":\"$1\"}"
@@ -30,8 +30,18 @@ create_post() {
 
 commit_post() {
     cd "${github_repo}"
-    git add .
-    git commit -m "$1 added"
+#    git add .
+#    git commit -m "$1 added"
+}
+
+build_message() {
+    title="${1}"
+    text="${2}"
+    tags="${3}"
+    room="${4}"
+    next_date=`date "+%Y-%m-%d"`
+    message=`text="${text}" room="${room}" ${slack_bot_home}/message`
+    echo "${message}"
 }
 
 create() {
@@ -39,13 +49,26 @@ create() {
     text="${2}"
     tags="${3}"
     room="${4}"
-    next_date=`date "+%Y-%m-%d"`
-    message=`text="${text}" room="${room}" ${slack_bot_home}/message`
+
+    message=`build_message "${title}" "${text}" "${tags}" "${room}" `
 
     create_post "${title}" "${message}" "${tags}"
     commit_post "${title}"
+}
 
-    send "${message}\nSee updates at ${githubio_path}"
+update() {
+    echo "Not supported yet"
+}
+
+send() {
+    title="${1}"
+    text="${2}"
+    tags="${3}"
+    room="${4}"
+
+    message=`build_message "${title}" "${text}" "${tags}" "${room}" `
+
+    send_slack_message "${message}\nSee updates at ${githubio_path}"
 }
 
 load_properties
@@ -54,9 +77,15 @@ case "$1" in
     'create')
             create "$2" "$3" "$4" "$5"
             ;;
+    'update')
+            update "$2" "$3" "$4" "$5"
+            ;;
+    'send')
+            send "$2" "$3" "$4" "$5"
+            ;;
     *)
             echo
-            echo "Usage: $0 { create } title message"
+            echo "Usage: $0 { create | update | send } title message"
             echo
             exit 1
             ;;
