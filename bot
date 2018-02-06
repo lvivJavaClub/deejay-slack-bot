@@ -3,13 +3,13 @@
 PROPERTIES=${slack_bot_home:-.}/application.properties
 
 load_properties() {
-    file=$PROPERTIES
+    file="${PROPERTIES}"
     if [ -f "$file" ]
     then
         echo "$file found."
         while IFS='=' read -r key value
         do
-            key=$(echo $key | tr '.' '_')
+            key=$(echo ${key} | tr '.' '_')
             eval "${key}='${value}'"
         done < "$file"
     else
@@ -18,9 +18,10 @@ load_properties() {
 }
 
 send_slack_message() {
+    message="${1}"
     curl --silent --request POST \
         --url "${slack_hooks}"  \
-        --data "{\"text\":\"$1\"}"
+        --data "{\"text\":\"${message}\"}"
 }
 
 create_post() {
@@ -29,16 +30,16 @@ create_post() {
 
 
 commit_post() {
+    message="${1}"
     cd "${github_repo}"
-#    git add .
-#    git commit -m "$1 added"
+    git add .
+    git commit -m "${message} added"
 }
 
 build_message() {
     title="${1}"
     text="${2}"
-    tags="${3}"
-    room="${4}"
+    room="${3}"
     next_date=`date "+%Y-%m-%d"`
     message=`text="${text}" room="${room}" ${slack_bot_home}/message`
     echo "${message}"
@@ -50,7 +51,7 @@ create() {
     tags="${3}"
     room="${4}"
 
-    message=`build_message "${title}" "${text}" "${tags}" "${room}" `
+    message=`build_message "${title}" "${text}" "${room}" `
 
     create_post "${title}" "${message}" "${tags}"
     commit_post "${title}"
@@ -63,29 +64,35 @@ update() {
 send() {
     title="${1}"
     text="${2}"
-    tags="${3}"
-    room="${4}"
+    room="${3}"
 
-    message=`build_message "${title}" "${text}" "${tags}" "${room}" `
+    message=`build_message "${title}" "${text}" "${room}" `
 
     send_slack_message "${message}\nSee updates at ${githubio_path}"
 }
 
 load_properties
 
-case "$1" in
+program="${0}"
+command="${1}"
+title="${2}"
+text="${3}"
+tags="${4}"
+room="${5}"
+
+case "${command}" in
     'create')
-            create "$2" "$3" "$4" "$5"
+            create "${title}" "${text}" "${tags}" "${room}"
             ;;
     'update')
-            update "$2" "$3" "$4" "$5"
+            update
             ;;
     'send')
-            send "$2" "$3" "$4" "$5"
+            send "${title}" "${text}" "${room}"
             ;;
     *)
             echo
-            echo "Usage: $0 { create | update | send } title message"
+            echo "Usage: ${program} { create | update | send } title message tags room"
             echo
             exit 1
             ;;
