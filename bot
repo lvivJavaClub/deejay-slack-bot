@@ -57,6 +57,29 @@ create() {
     commit_post "${title}"
 }
 
+wait_for_post() {
+    url=${githubio_path}/$(date "+%Y/%m/%d")/${1//[ ]/-}.html
+    echo "Waiting for post $url";
+    until $(curl --output /dev/null --silent --head --fail "$url"); do
+      printf '.'
+      sleep 5
+    done
+}
+
+create() {
+    title="${1}"
+    text="${2}"
+    tags="${3}"
+    next_date=`date "+%Y-%m-%d"`
+    message=`text="${text}" ./message`
+
+    create_post "${title}" "${message}" "${tags}"
+    push_post "${title}"
+    waiting_post "${title}"
+
+    send "${message}\nSee updates at ${github_io}"
+}
+
 update() {
     echo "Not supported yet"
 }
@@ -86,6 +109,9 @@ case "${command}" in
             ;;
     'update')
             update
+            ;;
+    'wait-for-post')
+            wait_for_post "${title}"
             ;;
     'send')
             send "${title}" "${text}" "${room}"
