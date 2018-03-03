@@ -25,7 +25,13 @@ send_slack_message() {
 }
 
 create_post() {
-    title="$1" message="$2" tags="$3" ${slack_bot_home}/post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
+    title="${1}"
+    message="${2}"
+    image_url="${3}"
+    tags="${4}"
+
+    title="${title}" message="${message}" image_url="${image_url}" tags="${tags}" \
+        ${slack_bot_home}/post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
 }
 
 
@@ -36,24 +42,39 @@ commit_post() {
     git commit -m "${message} added"
 }
 
-build_message() {
+build_post_message() {
     title="${1}"
     text="${2}"
     room="${3}"
+    details_url="${4}"
+
     next_date=`date "+%Y-%m-%d"`
-    message=`text="${text}" room="${room}" ${slack_bot_home}/message`
+    message=`text="${text}" room="${room}" details_url="${details_url}" ${slack_bot_home}/post_message`
+    echo "${message}"
+}
+
+build_slack_message() {
+    title="${1}"
+    text="${2}"
+    room="${3}"
+    details_url="${4}"
+
+    next_date=`date "+%Y-%m-%d"`
+    message=`text="${text}" room="${room}" details_url="${details_url}" ${slack_bot_home}/slack_message`
     echo "${message}"
 }
 
 create() {
     title="${1}"
     text="${2}"
-    tags="${3}"
-    room="${4}"
+    room="${3}"
+    details_url="${4}"
+    image_url="${5}"
+    tags="${6}"
 
-    message=`build_message "${title}" "${text}" "${room}" `
+    message=`build_post_message "${title}" "${text}" "${room}" "${details_url}"`
 
-    create_post "${title}" "${message}" "${tags}"
+    create_post "${title}" "${message}" "${image_url}" "${tags}"
     commit_post "${title}"
 }
 
@@ -66,20 +87,6 @@ wait_for_post() {
     done
 }
 
-create() {
-    title="${1}"
-    text="${2}"
-    tags="${3}"
-    next_date=`date "+%Y-%m-%d"`
-    message=`text="${text}" ./message`
-
-    create_post "${title}" "${message}" "${tags}"
-    push_post "${title}"
-    waiting_post "${title}"
-
-    send "${message}\nSee updates at ${github_io}"
-}
-
 update() {
     echo "Not supported yet"
 }
@@ -88,8 +95,9 @@ send() {
     title="${1}"
     text="${2}"
     room="${3}"
+    details_url="${4}"
 
-    message=`build_message "${title}" "${text}" "${room}" `
+    message=`build_slack_message "${title}" "${text}" "${room}" "${details_url}"`
 
     send_slack_message "${message}\nSee updates at ${githubio_path}"
 }
@@ -98,14 +106,17 @@ load_properties
 
 program="${0}"
 command="${1}"
+
 title="${2}"
 text="${3}"
-tags="${4}"
-room="${5}"
+room="${4}"
+details_url="${5}"
+image_url="${6}"
+tags="${7}"
 
 case "${command}" in
     'create')
-            create "${title}" "${text}" "${tags}" "${room}"
+            create "${title}" "${text}" "${room}" "${details_url}" "${image_url}" "${tags}"
             ;;
     'update')
             update
@@ -114,7 +125,7 @@ case "${command}" in
             wait_for_post "${title}"
             ;;
     'send')
-            send "${title}" "${text}" "${room}"
+            send "${title}" "${text}" "${room}" "${details_url}"
             ;;
     *)
             echo

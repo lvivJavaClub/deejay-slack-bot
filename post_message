@@ -1,0 +1,6 @@
+cat <<END
+Hi, this week on Java club
+${text} [${details_url}](${details_url})
+
+Join us next Thursday, at 10:00 in ${room}
+END

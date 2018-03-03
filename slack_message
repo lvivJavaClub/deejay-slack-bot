@@ -1,6 +1,6 @@
 cat <<END
 Hi, this week on Java club
-${text}
+${text} ${details_url}
 
 Join us next Thursday, at 10:00 in ${room}
 END
