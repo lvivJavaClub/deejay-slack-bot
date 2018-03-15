@@ -31,7 +31,7 @@ create_post() {
     tags="${4}"
 
     title="${title}" message="${message}" image_url="${image_url}" tags="${tags}" \
-        ${slack_bot_home}/post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ ]/-}.md"
+        ${slack_bot_home}/post > "${github_repo}/_posts/$(date "+%Y-%m-%d")-${1//[ #]/-}.md"
 }
 
 
@@ -79,7 +79,7 @@ create() {
 }
 
 wait_for_post() {
-    url=${githubio_path}/$(date "+%Y/%m/%d")/${1//[ ]/-}.html
+    url=${githubio_path}/$(date "+%Y/%m/%d")/${1//[ #]/-}.html
     echo "Waiting for post $url";
     until $(curl --output /dev/null --silent --head --fail "$url"); do
       printf '.'
